@@ -1,7 +1,7 @@
 # Geo-Temporal Traffic Accident Hotspot Prediction in New York City Using Tabular and Neural Spatiotemporal Models
 
 ## Abstract
-Traffic crashes are a major public-safety problem, but safety interventions are easier to target when cities can identify where risk is likely to be concentrated before severe outcomes occur. This project builds a geo-temporal accident hotspot prediction pipeline for New York City using a `250m x 250m` spatial grid and hourly prediction buckets. The system combines a large crash-history source derived from the US-Accidents dataset with NYC collision enrichment data and FARS fatal-crash validation data. We benchmark logistic regression, support vector machines, tree ensembles, gradient boosting, a recurrent neural network (RNN), and a spatial convolutional neural network (CNN) under a shared train/validation/test policy. In the saved all-crash experiment outputs, the promoted model is an RNN sequence model, selected by a policy-oriented metric that measures how many observed crashes are captured inside the top `5%` of predicted areas. The saved all-crash winner achieves validation ROC AUC `0.9222`, validation average precision `0.8386`, validation top-`5%` capture `0.2503`, test ROC AUC `0.8977`, test average precision `0.7184`, and test top-`5%` capture `0.3180`. These results suggest that compact spatiotemporal neural models can be useful for ranking high-risk areas even when traditional tabular models remain competitive on conventional discrimination metrics.
+Traffic crashes are a major public-safety problem, but safety interventions are easier to target when cities can identify where risk is likely to be concentrated before severe outcomes occur. This project builds a geo-temporal accident hotspot prediction pipeline for New York City using a `250m x 250m` spatial grid and hourly prediction buckets. The system combines a large crash-history source derived from the US-Accidents dataset with NYC collision enrichment data and FARS fatal-crash validation data. We benchmark logistic regression, support vector machines, tree ensembles, gradient boosting, a recurrent neural network (RNN), and a spatial convolutional neural network (CNN) under a shared train/validation/test policy, then run a parallel severe-crash benchmark using tabular models. For the all-crash task, the promoted model is an RNN sequence model, selected by a policy-oriented metric that measures how many observed crashes are captured inside the top `5%` of predicted areas. It achieves validation ROC AUC `0.9222`, validation average precision `0.8386`, validation top-`5%` capture `0.2503`, test ROC AUC `0.8977`, test average precision `0.7184`, and test top-`5%` capture `0.3180`. For the severe-crash task, the promoted model is a random forest with test ROC AUC `0.9312`, test average precision `0.2488`, and test top-`5%` capture `0.0512`. SHAP-based summaries show that all-crash hotspots are driven mainly by long-run crash volume, nighttime conditions, and recent recurrence, while severe hotspots are driven mainly by long-run crash volume, prior severe crash history, and historical crash severity. These results suggest that compact spatiotemporal neural models are especially useful for concentrated hotspot ranking, while severe-event prediction remains harder and benefits from interpretable tabular structure.
 
 ## Introduction
 Motor vehicle crashes remain one of the most persistent transportation safety problems in the United States. For a city transportation agency, the operational question is not just whether crashes happen, but where and when risk concentrates strongly enough to justify targeted intervention. In this project, that question is framed as **hotspot prediction**: given historical accident and context features, can a model predict which small regions of New York City are most likely to experience a crash in a given hour?
@@ -28,7 +28,7 @@ The prediction unit is a pair `(cell_id, bucket_start)`, where `cell_id` identif
 
 `y(c, t) = 1` if at least one crash occurs in cell `c` during hour `t`, and `0` otherwise.
 
-Although the codebase now also supports a severe-crash track, this paper focuses on the **completed all-crash results** because those are the only fully generated outputs available in the current workspace.
+The pipeline supports two aligned targets. The **all-crash** label is `1` when at least one crash occurs in a cell-hour. The **severe** label is `1` when at least one crash in that cell-hour has `Severity >= 3`. Both tracks are built on the same sampled rows and split policy so their results can be compared directly.
 
 ### Data Sources
 The pipeline uses three local datasets:
@@ -97,7 +97,7 @@ After promotion, the pipeline exports canonical predictions, ranked hotspots, pl
 
 ## Experiments
 ### Experimental Setup
-All experiments in this paper come from the saved all-crash benchmark artifacts in `hotspots/outputs/` and `hotspots/outputs/benchmark/`. The benchmark leaderboard includes successful runs for all nine model families. The most important comparison is not just which model has the highest ROC AUC, but which model captures the greatest share of observed crashes in the top `5%` of predicted areas.
+All experiments in this paper come from the saved benchmark artifacts in `hotspots/outputs/` and `hotspots/outputs/severe/`. The all-crash leaderboard includes successful runs for all nine model families, while the severe leaderboard includes the seven tabular models. The most important comparison is not just which model has the highest ROC AUC, but which model captures the greatest share of observed events in the top `5%` of predicted areas.
 
 ### Benchmark Results
 Table 1 summarizes the saved all-crash results.
@@ -116,10 +116,32 @@ Table 1 summarizes the saved all-crash results.
 
 The strongest conventional metrics on the tabular side come from boosted/tree models, especially HistGradientBoosting and XGBoost. On validation ROC AUC and validation AP, those models outperform the RNN. However, the RNN dominates on the project’s chosen policy metric, top-`5%` capture. Because the system explicitly promotes models using that metric first, the RNN becomes the saved best model.
 
+### Severe-Crash Results
+Table 2 summarizes the saved severe-track benchmark results.
+
+| Model | Family | Validation ROC AUC | Validation AP | Validation Top-5% Capture | Test ROC AUC | Test AP | Test Top-5% Capture |
+|---|---|---:|---:|---:|---:|---:|---:|
+| Logistic Regression | Tabular | 0.9262 | 0.5427 | 0.0150 | 0.9180 | 0.2991 | 0.0463 |
+| SVM (RBF) | Tabular | 0.9280 | 0.4454 | 0.0150 | 0.9029 | 0.1088 | 0.0581 |
+| Bagging Tree | Tabular | 0.9387 | 0.5473 | 0.0210 | 0.9266 | 0.2246 | 0.0507 |
+| **Random Forest** | **Tabular** | **0.9442** | **0.5795** | **0.0240** | **0.9312** | **0.2488** | **0.0512** |
+| Extra Trees | Tabular | 0.9452 | 0.6009 | 0.0120 | 0.9361 | 0.2720 | 0.0522 |
+| HistGradientBoosting | Tabular | 0.9514 | 0.6199 | 0.0150 | 0.9424 | 0.2829 | 0.0497 |
+| XGBoost | Tabular | 0.9510 | 0.6243 | 0.0150 | 0.9417 | 0.2905 | 0.0512 |
+
+The severe-crash track tells a different story from the all-crash track. On conventional metrics, several tree-based models are strong, and the overall ROC AUC values are higher than the all-crash case. However, top-`5%` capture is much lower for every severe model, with the promoted random forest reaching only `0.0512` on test. This suggests that severe events are rarer and harder to concentrate into a very small set of actionable hotspot cells. It is also a reminder that a model can rank rare events reasonably well in aggregate while still struggling to isolate the most operationally useful top-risk slice.
+
 ### Interpreting the Winner
 The most important takeaway is that “best” depends on what the city wants to optimize. If the target is overall ranking quality across all test rows, XGBoost and HistGradientBoosting are very strong candidates. If the target is to identify a small set of highly concentrated risk cells for intervention, the RNN performs much better on the chosen policy metric. This suggests that short-range temporal recurrence inside a cell may be especially valuable when the output is used for hotspot targeting rather than broad probability calibration.
 
 One plausible explanation is that the RNN is better at capturing **localized temporal persistence**. The sequence representation gives the model direct access to recent lagged history over an `8`-step lookback window, which may help it recognize repeating hourly patterns that are not as directly expressed in a static tabular row. By contrast, the tabular models rely on manually engineered lag summaries. Those summaries are still informative, but they may smooth away some fine-grained recurrence patterns.
+
+### Explainability Findings
+Both tracks now include SHAP explanation artifacts built from tree-based tabular explainers. For the all-crash track, the promoted prediction model is the RNN, so explanations are delegated to the best successful tree-based fallback model, a random forest. For the severe track, the promoted model is itself a random forest, so the prediction and explanation model are the same.
+
+The explanation summaries reveal a clear pattern. Across all `168` all-crash hotspot explanation rows, `historic_cell_crash_total` appears as a top driver every time, `is_night` appears in `161` rows, and `rolling_recent_crash_count` appears in `127` rows. In plain language, the all-crash system flags places because they have a long crash history, because they are risky at night, and because crashes have happened there recently.
+
+The severe-track explanations are more severity-specific. Across all `168` severe hotspot explanation rows, `historic_cell_crash_total` appears in every row, `prior_cell_severe_count` appears in every row, and `prior_avg_severity` appears in `166` rows. In plain language, the severe model is mostly saying: this place is dangerous because it has crashed a lot, it has had severe crashes before, and its historical crashes tend to be more severe.
 
 ### Final Saved Outputs
 The promoted all-crash model metadata records:
@@ -137,9 +159,26 @@ The saved best-model metrics file reports:
 - test ROC AUC: `0.8967`
 - test AP: `0.7168`
 - test top-`5%` capture: `0.3178`
-- FARS hotspot overlap: `0.02994`
+- FARS hotspot overlap: `0.03293`
 
 The FARS overlap value is modest, which is a useful cautionary finding. It suggests the model is learning meaningful spatial-temporal crash risk for the all-crash task, but that alignment with fatal-crash concentration remains limited. That is not necessarily a failure, because the optimization target in this run is general crash occurrence rather than fatality prediction. Still, it supports the motivation for a later severity-aware modeling track.
+
+The promoted severe-track metadata records:
+
+- saved best model: `random_forest`
+- feature set: `tabular_v2`
+- selection rule: `validation top_5pct_capture -> average_precision -> roc_auc`
+- explainability source: `promoted_model`
+
+The saved severe metrics file reports:
+
+- validation ROC AUC: `0.9442`
+- validation AP: `0.5795`
+- validation top-`5%` capture: `0.0240`
+- test ROC AUC: `0.9312`
+- test AP: `0.2488`
+- test top-`5%` capture: `0.0512`
+- FARS hotspot overlap: `0.02994`
 
 Plain-language summary: the RNN did not win because it was best at every metric. It won because it was best at finding a small set of places where many real crashes happened, which matches the project’s practical goal.
 
@@ -150,25 +189,18 @@ The strongest result is not simply “deep learning wins.” The stronger conclu
 
 At the same time, several limitations remain:
 
-1. The completed saved outputs in this workspace are all-crash only. The codebase now supports a severe-crash track, but those artifacts were not generated successfully in the current checkout and therefore are not treated as completed experimental evidence here.
+1. Severe-track outputs are now generated, but severe hotspot capture remains much weaker than all-crash hotspot capture, showing that rare-event concentration is still a hard problem.
 2. The data pipeline currently relies on coarse in-file weather labels rather than numeric NOAA variables such as precipitation amount, temperature, or visibility.
 3. The current run does not yet include OpenStreetMap road-network features such as intersection density, speed limits, or traffic control details.
 4. Population or exposure features, such as pedestrian activity or traffic-volume proxies, are not part of the completed benchmark.
-5. Although the codebase includes SHAP-related logic and records a tree-based fallback explainer model, the saved explanation artifacts are not present in the current outputs directory and therefore are best described as future work rather than finished results.
+5. SHAP explanations are available, but they are still based on tree models rather than direct explanations of the neural winner.
 
-These limitations point to a clear next phase. A stronger follow-up system would combine the current grid-and-history setup with numeric NOAA weather data, road-network covariates from OSM, and a fully generated severe-hotspot pipeline. That combination would make the predictions more causal, more interpretable, and more relevant to injury-prevention planning.
+These limitations point to a clear next phase. A stronger follow-up system would combine the current grid-and-history setup with numeric NOAA weather data, road-network covariates from OSM, stronger exposure features, and a richer severe-event benchmark. That combination would make the predictions more causal, more interpretable, and more relevant to injury-prevention planning.
 
 ## Conclusion
-This paper presented an NYC accident hotspot prediction benchmark that converts crash history into hourly predictions over `250m x 250m` map cells. The system compares linear, kernel, tree-based, boosted, recurrent, and spatial neural models under one leakage-aware split policy and one intervention-oriented model-selection rule. In the completed all-crash results, the RNN sequence model is the promoted winner because it captures substantially more observed crashes inside the top `5%` of predicted high-risk areas than the tabular baselines. In plain language, the model is useful because it helps narrow a very large city into a much smaller set of places that deserve attention first. The current results are promising, but the next meaningful step is to complete severity-aware outputs and explanation artifacts so the system can better support high-stakes traffic-safety planning.
+This paper presented an NYC accident hotspot prediction benchmark that converts crash history into hourly predictions over `250m x 250m` map cells. The system compares linear, kernel, tree-based, boosted, recurrent, and spatial neural models under one leakage-aware split policy and one intervention-oriented model-selection rule. In the all-crash results, the RNN sequence model is the promoted winner because it captures substantially more observed crashes inside the top `5%` of predicted high-risk areas than the tabular baselines. In the severe-crash results, a random forest is the promoted winner, but the severe task remains harder and less concentrated. In plain language, the all-crash model is useful because it helps narrow a very large city into a much smaller set of places that deserve attention first, while the severe model shows where future feature enrichment is most needed.
 
 ## What Is Still Missing
-### Missing Generated Results
-- `hotspots/outputs/severe/` artifact set for the completed severe track.
-- `hotspots/outputs/track_comparison.json` and the associated cross-track plot.
-- SHAP export artifacts such as `shap_summary.png` and `hotspot_explanations.csv` for the current saved run.
-
-**Resource / source of truth:** current repo outputs in `hotspots/outputs/`, plus the SHAP paper by Lundberg and Lee (2017) for explainability framing.
-
 ### Missing Methodological Scope
 - Numeric NOAA weather enrichment, especially precipitation, temperature, and visibility fields.
 - OpenStreetMap road-network features such as intersection density, speed limits, and traffic-control information.
@@ -181,7 +213,7 @@ This paper presented an NYC accident hotspot prediction benchmark that converts 
 - One simple pipeline figure that shows raw data to grid to features to models to hotspot map.
 - One hotspot map figure from the generated outputs.
 - A cleaned reference list with final publication metadata where possible.
-- A brief limitations paragraph tied directly to the currently absent severe-track and SHAP artifacts.
+- A brief limitations paragraph tied directly to the weak severe-track concentration results and the missing external covariates.
 
 **Resource / source of truth:** the current benchmark CSV and plot outputs in the repo, plus the official dataset pages listed below.
 
