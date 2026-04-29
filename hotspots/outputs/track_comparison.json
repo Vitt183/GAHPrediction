@@ -1,0 +1,22 @@
+{
+  "tracks": [
+    {
+      "target_track": "all_crash",
+      "model_id": "rnn_sequence",
+      "test_roc_auc": 0.8977104815217549,
+      "test_average_precision": 0.7183811477359602,
+      "test_top_5pct_capture": 0.31798329305007844,
+      "fars_hotspot_overlap": 0.03293413173652695,
+      "mean_top_hotspot_probability": 0.9547353210901552
+    },
+    {
+      "target_track": "severe",
+      "model_id": "random_forest",
+      "test_roc_auc": 0.9312236497186449,
+      "test_average_precision": 0.24880854656879117,
+      "test_top_5pct_capture": 0.051181102362204724,
+      "fars_hotspot_overlap": 0.029940119760479042,
+      "mean_top_hotspot_probability": 0.6843054897276353
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "target_track": "severe",
+  "target_column": "severe_label",
+  "model_id": "random_forest",
+  "family": "tabular",
+  "selection_rule": "validation top_5pct_capture -> average_precision -> roc_auc",
+  "validation": {
+    "roc_auc": 0.9442309703736631,
+    "average_precision": 0.5795198251643117,
+    "top_5pct_capture": 0.023952095808383235
+  },
+  "test": {
+    "roc_auc": 0.9312236497186449,
+    "average_precision": 0.24880854656879117,
+    "top_5pct_capture": 0.051181102362204724
+  },
+  "feature_set_id": "tabular_v2",
+  "explainability": {
+    "available": true,
+    "model_id": "random_forest",
+    "family": "tabular",
+    "source": "promoted_model"
+  }
+}

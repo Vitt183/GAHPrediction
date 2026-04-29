@@ -1,0 +1,30 @@
+{
+  "target_track": "severe",
+  "target_column": "severe_label",
+  "model_id": "random_forest",
+  "family": "tabular",
+  "validation": {
+    "roc_auc": 0.9442309703736631,
+    "average_precision": 0.5795198251643117,
+    "top_5pct_capture": 0.023952095808383235
+  },
+  "test": {
+    "roc_auc": 0.9312236497186449,
+    "average_precision": 0.24880854656879117,
+    "top_5pct_capture": 0.051181102362204724
+  },
+  "fars_hotspot_overlap": 0.029940119760479042,
+  "explainability": {
+    "available": true,
+    "model_id": "random_forest",
+    "family": "tabular",
+    "source": "promoted_model"
+  },
+  "explanation_artifacts": {
+    "status": "ok",
+    "explain_model_id": "random_forest",
+    "rows": 168,
+    "shap_summary_path": "/home/virtual/stats-421/hotspots/outputs/severe/shap_summary.png",
+    "hotspot_explanations_path": "/home/virtual/stats-421/hotspots/outputs/severe/hotspot_explanations.csv"
+  }
+}

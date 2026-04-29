@@ -1,0 +1,181 @@
+{
+  "target_track": "severe",
+  "target_column": "severe_label",
+  "models": {
+    "logreg": {
+      "target_track": "severe",
+      "target_column": "severe_label",
+      "model_id": "logreg",
+      "family": "tabular",
+      "status": "ok",
+      "runtime_seconds": 0.809,
+      "feature_set_id": "tabular_v2",
+      "validation": {
+        "roc_auc": 0.92623878879795,
+        "average_precision": 0.5427178445388612,
+        "top_5pct_capture": 0.014970059880239521
+      },
+      "test": {
+        "roc_auc": 0.9180037805486939,
+        "average_precision": 0.2990904455802641,
+        "top_5pct_capture": 0.04625984251968504
+      },
+      "validation_roc_auc": 0.92623878879795,
+      "validation_average_precision": 0.5427178445388612,
+      "validation_top_5pct_capture": 0.014970059880239521,
+      "test_roc_auc": 0.9180037805486939,
+      "test_average_precision": 0.2990904455802641,
+      "test_top_5pct_capture": 0.04625984251968504
+    },
+    "svm_rbf": {
+      "target_track": "severe",
+      "target_column": "severe_label",
+      "model_id": "svm_rbf",
+      "family": "tabular",
+      "status": "ok",
+      "runtime_seconds": 82.99,
+      "feature_set_id": "tabular_v2",
+      "validation": {
+        "roc_auc": 0.9280221216954737,
+        "average_precision": 0.44544865764321573,
+        "top_5pct_capture": 0.014970059880239521
+      },
+      "test": {
+        "roc_auc": 0.9029358564085828,
+        "average_precision": 0.10880319953440744,
+        "top_5pct_capture": 0.058070866141732284
+      },
+      "validation_roc_auc": 0.9280221216954737,
+      "validation_average_precision": 0.44544865764321573,
+      "validation_top_5pct_capture": 0.014970059880239521,
+      "test_roc_auc": 0.9029358564085828,
+      "test_average_precision": 0.10880319953440744,
+      "test_top_5pct_capture": 0.058070866141732284
+    },
+    "bagging_tree": {
+      "target_track": "severe",
+      "target_column": "severe_label",
+      "model_id": "bagging_tree",
+      "family": "tabular",
+      "status": "ok",
+      "runtime_seconds": 24.524,
+      "feature_set_id": "tabular_v2",
+      "validation": {
+        "roc_auc": 0.9387378082263421,
+        "average_precision": 0.5472584839200693,
+        "top_5pct_capture": 0.020958083832335328
+      },
+      "test": {
+        "roc_auc": 0.9265843032027512,
+        "average_precision": 0.22460838761929022,
+        "top_5pct_capture": 0.050688976377952756
+      },
+      "validation_roc_auc": 0.9387378082263421,
+      "validation_average_precision": 0.5472584839200693,
+      "validation_top_5pct_capture": 0.020958083832335328,
+      "test_roc_auc": 0.9265843032027512,
+      "test_average_precision": 0.22460838761929022,
+      "test_top_5pct_capture": 0.050688976377952756
+    },
+    "random_forest": {
+      "target_track": "severe",
+      "target_column": "severe_label",
+      "model_id": "random_forest",
+      "family": "tabular",
+      "status": "ok",
+      "runtime_seconds": 3.927,
+      "feature_set_id": "tabular_v2",
+      "validation": {
+        "roc_auc": 0.9442309703736631,
+        "average_precision": 0.5795198251643117,
+        "top_5pct_capture": 0.023952095808383235
+      },
+      "test": {
+        "roc_auc": 0.9312236497186449,
+        "average_precision": 0.24880854656879117,
+        "top_5pct_capture": 0.051181102362204724
+      },
+      "validation_roc_auc": 0.9442309703736631,
+      "validation_average_precision": 0.5795198251643117,
+      "validation_top_5pct_capture": 0.023952095808383235,
+      "test_roc_auc": 0.9312236497186449,
+      "test_average_precision": 0.24880854656879117,
+      "test_top_5pct_capture": 0.051181102362204724
+    },
+    "extra_trees": {
+      "target_track": "severe",
+      "target_column": "severe_label",
+      "model_id": "extra_trees",
+      "family": "tabular",
+      "status": "ok",
+      "runtime_seconds": 2.593,
+      "feature_set_id": "tabular_v2",
+      "validation": {
+        "roc_auc": 0.9452246162696442,
+        "average_precision": 0.6009298725397483,
+        "top_5pct_capture": 0.011976047904191617
+      },
+      "test": {
+        "roc_auc": 0.9361249345215461,
+        "average_precision": 0.27195694401886994,
+        "top_5pct_capture": 0.05216535433070866
+      },
+      "validation_roc_auc": 0.9452246162696442,
+      "validation_average_precision": 0.6009298725397483,
+      "validation_top_5pct_capture": 0.011976047904191617,
+      "test_roc_auc": 0.9361249345215461,
+      "test_average_precision": 0.27195694401886994,
+      "test_top_5pct_capture": 0.05216535433070866
+    },
+    "hist_gb": {
+      "target_track": "severe",
+      "target_column": "severe_label",
+      "model_id": "hist_gb",
+      "family": "tabular",
+      "status": "ok",
+      "runtime_seconds": 2.812,
+      "feature_set_id": "tabular_v2",
+      "validation": {
+        "roc_auc": 0.9513636482493528,
+        "average_precision": 0.619912709048995,
+        "top_5pct_capture": 0.014970059880239521
+      },
+      "test": {
+        "roc_auc": 0.9424227966350156,
+        "average_precision": 0.28286163166140266,
+        "top_5pct_capture": 0.04970472440944882
+      },
+      "validation_roc_auc": 0.9513636482493528,
+      "validation_average_precision": 0.619912709048995,
+      "validation_top_5pct_capture": 0.014970059880239521,
+      "test_roc_auc": 0.9424227966350156,
+      "test_average_precision": 0.28286163166140266,
+      "test_top_5pct_capture": 0.04970472440944882
+    },
+    "xgboost": {
+      "target_track": "severe",
+      "target_column": "severe_label",
+      "model_id": "xgboost",
+      "family": "tabular",
+      "status": "ok",
+      "runtime_seconds": 5.462,
+      "feature_set_id": "tabular_v2",
+      "validation": {
+        "roc_auc": 0.9509740344638236,
+        "average_precision": 0.6243413887180984,
+        "top_5pct_capture": 0.014970059880239521
+      },
+      "test": {
+        "roc_auc": 0.9417437676440745,
+        "average_precision": 0.2905494852546421,
+        "top_5pct_capture": 0.051181102362204724
+      },
+      "validation_roc_auc": 0.9509740344638236,
+      "validation_average_precision": 0.6243413887180984,
+      "validation_top_5pct_capture": 0.014970059880239521,
+      "test_roc_auc": 0.9417437676440745,
+      "test_average_precision": 0.2905494852546421,
+      "test_top_5pct_capture": 0.051181102362204724
+    }
+  }
+}
