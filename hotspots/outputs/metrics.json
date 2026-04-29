@@ -1,0 +1,30 @@
+{
+  "target_track": "all_crash",
+  "target_column": "label",
+  "model_id": "rnn_sequence",
+  "family": "neural_sequence",
+  "validation": {
+    "roc_auc": 0.9222146627493126,
+    "average_precision": 0.8385709936096384,
+    "top_5pct_capture": 0.25025432349949134
+  },
+  "test": {
+    "roc_auc": 0.8977104815217549,
+    "average_precision": 0.7183811477359602,
+    "top_5pct_capture": 0.31798329305007844
+  },
+  "fars_hotspot_overlap": 0.03293413173652695,
+  "explainability": {
+    "available": true,
+    "model_id": "random_forest",
+    "family": "tabular",
+    "source": "best_tree_fallback"
+  },
+  "explanation_artifacts": {
+    "status": "ok",
+    "explain_model_id": "random_forest",
+    "rows": 168,
+    "shap_summary_path": "/home/virtual/stats-421/hotspots/outputs/shap_summary.png",
+    "hotspot_explanations_path": "/home/virtual/stats-421/hotspots/outputs/hotspot_explanations.csv"
+  }
+}
